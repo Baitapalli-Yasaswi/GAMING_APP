@@ -20,7 +20,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             text-align: center;
-            width: 300px;
+            width: 320px;
         }
         input {
             padding: 10px;
@@ -39,6 +39,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 16px;
+            margin: 5px;
         }
         button:hover {
             background-color: #4c51bf;
@@ -48,6 +49,9 @@
             font-weight: bold;
             color: #333;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -55,19 +59,27 @@
     <div class="card">
         <h2>Guess The Number</h2>
         <p>I'm thinking of a number between 1 and 100.</p>
+        
         <input type="number" id="userGuess" placeholder="Enter your guess">
         <br>
         <button id="guessBtn">Guess</button>
+        <!-- Feature 2: Play Again Button (Hidden by default) -->
+        <button id="restartBtn" class="hidden" style="background-color: #38a169;">Play Again</button>
+        
         <p id="message"></p>
+        <!-- Feature 1: Attempts Counter Display -->
+        <p id="attemptsText" style="font-size: 14px; color: #666;"></p>
     </div>
 
     <script>
-        // Generate random number between 1 and 100
         let randomNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0; // Feature 1: Track attempts
 
         const guessBtn = document.getElementById('guessBtn');
+        const restartBtn = document.getElementById('restartBtn');
         const userGuess = document.getElementById('userGuess');
         const message = document.getElementById('message');
+        const attemptsText = document.getElementById('attemptsText');
 
         guessBtn.addEventListener('click', function() {
             let guess = Number(userGuess.value);
@@ -78,16 +90,41 @@
                 return;
             }
 
+            attempts++; // Count this guess
+
             if (guess === randomNumber) {
-                message.textContent = "🎉 Correct! You guessed the number!";
+                // Feature 1: Show attempts on success
+                message.textContent = `🎉 Correct! You guessed it in ${attempts} attempts!`;
                 message.style.color = "green";
+                
+                // Feature 2: Show restart button, hide guess button
+                guessBtn.classList.add('hidden');
+                restartBtn.classList.remove('hidden');
+                userGuess.disabled = true;
             } else if (guess > randomNumber) {
                 message.textContent = "📉 Too high! Try a lower number.";
                 message.style.color = "#d97706";
+                attemptsText.textContent = `Attempts so far: ${attempts}`;
             } else {
                 message.textContent = "📈 Too low! Try a higher number.";
                 message.style.color = "#2563eb";
+                attemptsText.textContent = `Attempts so far: ${attempts}`;
             }
+            
+            userGuess.value = ''; // Clear input field for next guess
+        });
+
+        // Feature 2: Reset game logic when Play Again is clicked
+        restartBtn.addEventListener('click', function() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            message.textContent = '';
+            attemptsText.textContent = '';
+            userGuess.value = '';
+            userGuess.disabled = false;
+            
+            restartBtn.classList.add('hidden');
+            guessBtn.classList.remove('hidden');
         });
     </script>
 
